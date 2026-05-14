@@ -8,4 +8,12 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<div>
+	this is a menu methinks lmao
+</div>
+
 {@render children()}
+
+<div>
+	layout some other stuffs and sht
+</div>
