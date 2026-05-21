@@ -7,6 +7,9 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
+backend/uploads
+__pycache__/
+*.pyc
 
 # OS
 .DS_Store
