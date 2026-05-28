@@ -31,6 +31,10 @@
 		posts = [post, ...posts];
 	}
 
+	function handlePostDeleted(postId: string) {
+		posts = posts.filter((post) => post.id !== postId);
+	}
+
 	onMount(() => {
 		void loadProfile();
 	});
@@ -75,7 +79,7 @@
 		{#if posts.length > 0}
 			<div class="feed">
 				{#each posts as post (post.id)}
-					<PostCard {post} />
+					<PostCard {post} onDeleted={handlePostDeleted} />
 				{/each}
 			</div>
 		{:else}

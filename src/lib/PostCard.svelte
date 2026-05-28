@@ -1,7 +1,10 @@
 <script lang="ts">
-	import type { Post } from '$lib/api';
+	import { deletePost, type Post } from '$lib/api';
 
-	let { post }: { post: Post } = $props();
+	let { post, onDeleted }: { post: Post; onDeleted?: (postId: string) => void } = $props();
+
+	let isDeleting = $state(false);
+	let deleteError = $state('');
 
 	function formatDate(value: string) {
 		const date = new Date(value);
@@ -14,6 +17,29 @@
 			dateStyle: 'short',
 			timeStyle: 'short'
 		}).format(date);
+	}
+
+	async function handleDelete() {
+		if (isDeleting) {
+			return;
+		}
+
+		if (!confirm('この投稿を削除しますか？')) {
+			return;
+		}
+
+		isDeleting = true;
+		deleteError = '';
+
+		try {
+			await deletePost(post.id);
+			onDeleted?.(post.id);
+		} catch (error) {
+			console.error('Failed to delete post.', error);
+			deleteError = '削除できませんでした。';
+		} finally {
+			isDeleting = false;
+		}
 	}
 </script>
 
@@ -45,6 +71,14 @@
 			<span>{post.likes ?? 0} いいね</span>
 			<span>{post.comments ?? 0} コメント</span>
 		</footer>
+
+		{#if deleteError}
+			<p class="delete-error">{deleteError}</p>
+		{/if}
+
+		<button class="delete-button" type="button" onclick={handleDelete} disabled={isDeleting}>
+			{isDeleting ? '削除中...' : '削除'}
+		</button>
 	</div>
 </article>
 
@@ -136,6 +170,36 @@
 		flex-wrap: wrap;
 		gap: 8px 14px;
 		margin-top: auto;
+	}
+
+	.delete-error {
+		flex: 0;
+		margin: 10px 0 0;
+		color: var(--danger);
+		font-size: 13px;
+	}
+
+	.delete-button {
+		align-self: flex-start;
+		margin-top: 10px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--surface-muted);
+		color: var(--danger);
+		cursor: pointer;
+		font: inherit;
+		font-size: 13px;
+		font-weight: 800;
+		padding: 7px 10px;
+	}
+
+	.delete-button:hover {
+		background: var(--surface-soft);
+	}
+
+	.delete-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
 	}
 
 	@media (max-width: 520px) {

@@ -179,6 +179,16 @@ def get_post(post_id: str):
     return normalize_post(post)
 
 
+@router.delete("/{post_id}")
+def delete_post(post_id: str):
+    result = PostCollection.delete_one({"$or": [{"id": post_id}, {"post_id": post_id}]})
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
+
+    return {"ok": True}
+
+
 def list_current_user_posts() -> list[dict]:
     account = get_current_account()
     docs = list(

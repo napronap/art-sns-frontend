@@ -1,42 +1,89 @@
-# sv
+# Art SNS
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+画像投稿SNSの簡単なプロトタイプです。フロントエンドは SvelteKit、バックエンドは FastAPI、データベースは MongoDB Atlas を使います。
 
-## Creating a project
+## 必要なもの
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Bun
+- Python 3
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## 初回セットアップ
 
-To recreate this project with the same configuration:
+フロントエンドの依存関係:
 
 ```sh
-# recreate this project
-bun x sv@0.15.3 create --template minimal --types ts --add prettier sveltekit-adapter="adapter:auto" --install bun art-sns
+bun install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+バックエンドの依存関係:
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+python -m pip install -r backend/requirements.txt
 ```
 
-## Building
+MongoDB の接続先は `backend/app/database/db.py` に設定されています。
 
-To create a production version of your app:
+## 起動方法
+
+ターミナルを2つ開きます。
+
+### 1. バックエンド
+
+`backend` フォルダに移動して起動します。
 
 ```sh
-npm run build
+cd backend
+python -m uvicorn app.app:app --host 127.0.0.1 --port 8010 --reload
 ```
 
-You can preview the production build with `npm run preview`.
+確認:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```txt
+http://127.0.0.1:8010/api/posts
+```
+
+JSON が表示されればバックエンドは動いています。
+
+### 2. フロントエンド
+
+プロジェクトのルートフォルダに戻って起動します。
+
+```sh
+bun run dev -- --host 127.0.0.1 --port 5173
+```
+
+ブラウザで開きます。
+
+```txt
+http://127.0.0.1:5173/
+```
+
+## API プロキシ
+
+フロントエンドは `/api` と `/uploads` をバックエンドに転送します。
+
+転送先:
+
+```txt
+http://127.0.0.1:8010
+```
+
+設定ファイル:
+
+```txt
+vite.config.ts
+```
+
+## 主なページ
+
+- `/` ホーム。全ユーザーの投稿をグリッド表示します。
+- `/profile` プロフィール。現在のユーザー情報と自分の投稿を表示します。
+
+## 投稿作成
+
+画面右上の「アップロード」ボタンから投稿できます。
+
+必要な入力:
+
+- 本文
+- 画像

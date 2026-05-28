@@ -169,7 +169,8 @@ export async function fetchPosts(cursor: string | null = null): Promise<PostsPag
 	try {
 		const data = await getJson<unknown>(`${API_BASE}/posts?${params.toString()}`);
 		return normalizePostsPage(data);
-	} catch {
+	} catch (error) {
+		console.error('Failed to fetch posts from backend, using demo posts.', error);
 		return demoPostsPage(cursor);
 	}
 }
@@ -177,7 +178,8 @@ export async function fetchPosts(cursor: string | null = null): Promise<PostsPag
 export async function fetchCurrentAccount(): Promise<Account> {
 	try {
 		return await getJson<Account>(`${API_BASE}/me`);
-	} catch {
+	} catch (error) {
+		console.error('Failed to fetch current account from backend, using demo account.', error);
 		return demoAccount;
 	}
 }
@@ -192,7 +194,8 @@ export async function fetchProfilePosts(): Promise<Post[]> {
 
 		const page = data as Partial<PostsPage> & { data?: Post[] };
 		return page.posts ?? page.data ?? [];
-	} catch {
+	} catch (error) {
+		console.error('Failed to fetch profile posts from backend, using demo posts.', error);
 		return demoPosts.filter((post) => post.account.id === demoAccount.id);
 	}
 }
@@ -214,7 +217,8 @@ export async function createPost(input: { text: string; image: File }): Promise<
 
 		const data = (await response.json()) as Post | { post: Post };
 		return 'post' in data ? data.post : data;
-	} catch {
+	} catch (error) {
+		console.error('Failed to create post in backend, creating local preview post.', error);
 		const id =
 			typeof crypto !== 'undefined' && 'randomUUID' in crypto
 				? crypto.randomUUID()
@@ -229,5 +233,15 @@ export async function createPost(input: { text: string; image: File }): Promise<
 			likes: 0,
 			comments: 0
 		};
+	}
+}
+
+export async function deletePost(postId: string): Promise<void> {
+	const response = await fetch(`${API_BASE}/posts/${postId}`, {
+		method: 'DELETE'
+	});
+
+	if (!response.ok) {
+		throw new Error(`Request failed: ${response.status}`);
 	}
 }

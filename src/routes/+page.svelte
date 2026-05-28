@@ -36,6 +36,10 @@
 		posts = [post, ...posts];
 	}
 
+	function handlePostDeleted(postId: string) {
+		posts = posts.filter((post) => post.id !== postId);
+	}
+
 	onMount(() => {
 		void loadMore();
 
@@ -65,7 +69,7 @@
 
 <section class="feed" aria-label="投稿フィード">
 	{#each posts as post (post.id)}
-		<PostCard {post} />
+		<PostCard {post} onDeleted={handlePostDeleted} />
 	{/each}
 
 	{#if error}
