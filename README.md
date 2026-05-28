@@ -1,3 +1,14 @@
+# チームメンバー
+
+SUAREZ RAMZEL PIMENTEL
+GURUNG SAUGAT
+竹下 陽喜
+小坂 楓
+Franco Tegaldi
+畑川 真緒
+竹下 一龍
+岩森 歩
+
 # Art SNS
 
 画像投稿SNSの簡単なプロトタイプです。フロントエンドは SvelteKit、バックエンドは FastAPI、データベースは MongoDB Atlas を使います。
